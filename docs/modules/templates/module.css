@@ -17,10 +17,10 @@
   --warn-soft: #fbf0d9;
   --bad: #b4232a;
   --bad-soft: #fbe5e5;
-  --violet: #6b4fbf;
-  --violet-soft: #efeafb;
-  --teal: #0f766e;
-  --teal-soft: #dff2ef;
+  --adapter: #6b4fbf;
+  --adapter-soft: #efeafb;
+  --store: #0f766e;
+  --store-soft: #dff2ef;
   --radius: 10px;
   --shadow: 0 1px 2px rgba(22, 25, 29, 0.05), 0 4px 16px rgba(22, 25, 29, 0.04);
   --font-text: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
@@ -49,10 +49,10 @@
     --warn-soft: #2a2112;
     --bad: #f2878b;
     --bad-soft: #2c1517;
-    --violet: #b9a4f5;
-    --violet-soft: #221c34;
-    --teal: #5cc8bd;
-    --teal-soft: #0f2826;
+    --adapter: #b9a4f5;
+    --adapter-soft: #221c34;
+    --store: #5cc8bd;
+    --store-soft: #0f2826;
     --shadow: none;
     color-scheme: dark;
   }
@@ -76,10 +76,10 @@
   --warn-soft: #2a2112;
   --bad: #f2878b;
   --bad-soft: #2c1517;
-  --violet: #b9a4f5;
-  --violet-soft: #221c34;
-  --teal: #5cc8bd;
-  --teal-soft: #0f2826;
+  --adapter: #b9a4f5;
+  --adapter-soft: #221c34;
+  --store: #5cc8bd;
+  --store-soft: #0f2826;
   --shadow: none;
   color-scheme: dark;
 }
@@ -632,8 +632,8 @@ figure.diagram.expanded svg {
 }
 
 .legend .adapter {
-  --legend-ink: var(--violet);
-  --legend-fill: var(--violet-soft);
+  --legend-ink: var(--adapter);
+  --legend-fill: var(--adapter-soft);
 }
 
 .legend .test {
@@ -642,8 +642,8 @@ figure.diagram.expanded svg {
 }
 
 .legend .store {
-  --legend-ink: var(--teal);
-  --legend-fill: var(--teal-soft);
+  --legend-ink: var(--store);
+  --legend-fill: var(--store-soft);
 }
 
 .legend .external {

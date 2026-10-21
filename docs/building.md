@@ -78,8 +78,8 @@ The build turns the agreed plan into code in a fixed order, so the tests check w
 
 1. **The SDK first.** Each package's public names, doc comments and a runnable example, exactly as the plan agreed them, with empty bodies.
 2. **The spec tests, by a fresh author.** A separate [`spec-writer`](../.claude/agents/spec-writer.md) agent, with no memory of the work so far, writes one test per test ID in the plan. It reads only the plan page and the SDK's signatures and doc comments. If the plan and the SDK can't agree on a test, it reports that instead of guessing. The tests must fail: a test that passes against empty bodies proves nothing.
-3. **Lock them.** `bun run spec:lock <id>` records a hash of each spec test file in `docs/modules/<id>/spec.lock`, committed with the tests. From then on the checks fail if a spec test changes, and a Claude Code hook refuses an agent's edits to one.
-4. **Build the code** until the spec tests pass. Working tests, the agent's own unit tests, can change freely.
+3. **Lock them.** `bun run spec:lock <id>` records a hash of each spec test file in `docs/modules/<id>/spec.lock`. From then on the checks fail if a spec test changes, and a Claude Code hook refuses an agent's edits to one. The lock works on disk from the moment it's written, so nothing needs committing yet.
+4. **Build the code** until the spec tests pass. Working tests, the agent's own unit tests, can change freely. Then commit the spec tests, `spec.lock` and the code together: the check command runs the tests, so a commit of failing spec tests would be refused by the commit hook.
 5. **Check it:** `{{CHECK_CMD}}` and the `code-reviewer` agent, fixing what they find.
 
 A spec test that looks wrong is a plan change, and the agent doesn't get to decide that alone. It stops, reopens the plan as [Going back](#going-back) describes, and says on the page why the test is wrong rather than its code. The user decides. If they agree, the `spec-writer` agent rewrites the test from the changed plan, never the agent that built the code, and the agent runs `spec:lock` again; the hook asks the user to approve that run.

@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -93,6 +99,25 @@ describe("spec lock", () => {
       },
     });
     expect(input && guard(tmp.root, input)?.decision).toBe("deny");
+  });
+
+  test("the hook sees through a symlinked path to the repo", () => {
+    lockModule(tmp.root, TEMPLATE, "billing-engine");
+    const link = `${tmp.root}-link`;
+    symlinkSync(tmp.root, link);
+    const input = parseHookInput({
+      tool_name: "Edit",
+      tool_input: {
+        file_path: join(link, "src/billing/spec_billing_engine_test.ts"),
+      },
+    });
+    expect(input && guard(tmp.root, input)?.decision).toBe("deny");
+    rmSync(link);
+  });
+
+  test("locking creates the module folder if it is missing", () => {
+    rmSync(join(tmp.root, "docs"), { recursive: true });
+    expect(lockModule(tmp.root, TEMPLATE, "billing-engine")).toHaveLength(2);
   });
 
   test("the hook leaves working tests alone", () => {

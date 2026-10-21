@@ -13,7 +13,7 @@ import {
   readText,
 } from "./markdown";
 
-const ROOT = join(import.meta.dir, "..");
+const ROOT = repoRoot();
 const ADR_DIR = join(ROOT, "docs", "decisions");
 const CHANGELOG = "CHANGELOG.md";
 const CONFIG = readConfig(ROOT);
@@ -49,6 +49,14 @@ const USAGE = `Checks the ADRs and the changelog.
   bun scripts/check_history.ts --since REF  also check commits REF..HEAD are in the changelog`;
 
 type Change = { status: string; path: string };
+
+function repoRoot(): string {
+  const result = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"], {
+    cwd: import.meta.dir,
+  });
+  if (!result.success) throw new Error("not inside a git repository");
+  return result.stdout.toString().trim();
+}
 
 function git(...args: string[]): string {
   const result = Bun.spawnSync(["git", ...args], {

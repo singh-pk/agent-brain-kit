@@ -7,9 +7,9 @@ const darkQuery = matchMedia("(prefers-color-scheme: dark)");
 
 const nodeKinds = {
   part: ["--accent-soft", "--accent"],
-  adapter: ["--violet-soft", "--violet"],
+  adapter: ["--adapter-soft", "--adapter"],
   test: ["--warn-soft", "--warn"],
-  store: ["--teal-soft", "--teal"],
+  store: ["--store-soft", "--store"],
   external: ["--sunk", "--ink-3"],
   blocked: ["--bad-soft", "--bad"],
 };

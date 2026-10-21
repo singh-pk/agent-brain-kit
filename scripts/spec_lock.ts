@@ -1,6 +1,13 @@
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { isAbsolute, join, relative, sep } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from "node:fs";
+import { basename, dirname, isAbsolute, join, relative, sep } from "node:path";
 import { readConfig } from "./config";
 
 const MODULE_ID = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
@@ -132,6 +139,7 @@ export function lockModule(
   }
 
   const lines = files.map((path) => `${hashFile(root, path)}  ${path}`);
+  mkdirSync(join(root, MODULES_DIR, moduleId), { recursive: true });
   writeFileSync(
     join(root, MODULES_DIR, moduleId, LEDGER),
     `${lines.join("\n")}\n`,
@@ -158,10 +166,15 @@ export function checkLocks(root: string, template: string): Problem[] {
   return problems;
 }
 
+function realPath(path: string): string {
+  if (existsSync(path)) return realpathSync(path);
+  const parent = dirname(path);
+  return parent === path ? path : join(realPath(parent), basename(path));
+}
+
 function repoPath(root: string, path: string): string {
-  return relative(root, isAbsolute(path) ? path : join(root, path))
-    .split(sep)
-    .join("/");
+  const full = isAbsolute(path) ? path : join(root, path);
+  return relative(realPath(root), realPath(full)).split(sep).join("/");
 }
 
 export function guard(root: string, input: HookInput): HookDecision {

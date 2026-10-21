@@ -37,10 +37,10 @@ The rules are in `docs/building.md` ([ADR-0002](../../../docs/decisions/0002-bui
 2. Follow `docs/writing-code.md` and the order in `docs/building.md` (Stage 2). Build only what the agreed plan lists.
 3. **SDK first.** Write each package's SDK exactly as the plan agreed it: the public names, their doc comments and a runnable example, with empty bodies.
 4. **Spec tests, by a fresh author.** Run the `spec-writer` agent with the module id. It writes one test per test ID, in files named by `specTestFile` in `process.json`, from the plan and the SDK alone. If it reports that the plan and SDK disagree, take that to the user as a plan round. Check the tests fail.
-5. **Lock them.** `bun run spec:lock <id>`, then commit the spec tests with `docs/modules/<id>/spec.lock`.
+5. **Lock them.** `bun run spec:lock <id>`. Don't commit yet: the spec tests fail until the code exists, and the commit hook runs the tests.
 6. **Build** until the spec tests pass. Never edit a locked spec test. If one looks wrong, stop and reopen the plan page for a new round, saying why the test is wrong rather than the code. The user decides. If they agree, run the `spec-writer` agent again on the changed plan, then `spec:lock`; the hook asks the user first.
 7. If the code can't follow an agreed decision, **stop**. Reopen the plan page for a new round explaining what you found. Write a new `proposed` ADR that supersedes the old one, and wait for the user to agree again before going on.
-8. Run `{{CHECK_CMD}}` and `{{TEST_CMD}}` until they pass.
+8. Run `{{CHECK_CMD}}` and `{{TEST_CMD}}` until they pass, then commit the spec tests, `docs/modules/<id>/spec.lock` and the code together.
 9. Stage the diff and run the `code-reviewer` agent on it, with one line on the module. Fix what it finds, or record why not for the review page.
 10. Move to stage 3.
 
