@@ -74,13 +74,13 @@ Copy these from the kit into the target, keeping their paths. **Never overwrite 
 | `CLAUDE.md` | Make sure its first line is `@AGENTS.md`; keep the rest |
 | `CHANGELOG.md` | Install only the kit's header and its `Decided` and `Added` lines, under today's date; drop the kit's own `Fixed` lines. If the project has a changelog, add that entry at the top and keep its history |
 | `DESIGN.md`, `PLAN.md` | Ask: use the existing file as the design (and point `designFiles` in `process.json` at it), or add these alongside |
-| `process.json`, `tsconfig.json` | If the project is TypeScript with no tsconfig of its own, add its source folders, such as `"src/**/*.ts"`, to the kit's `include`, so `tsc` checks the product code too. If the project has one, rename the kit's to `tsconfig.scripts.json` and, in the `check:process` script only, change `tsc -p .` to `tsc -p tsconfig.scripts.json` |
-| `package.json` | Merge: add the kit's `scripts` and `devDependencies`; keep everything else. If a `check` script exists, keep it and append `&& bun run check:process` |
+| `process.json`, `tsconfig.json` | If the project is TypeScript with no tsconfig of its own, add its source folders, such as `"src/**/*.ts"`, to the kit's `include`, so `tsc` checks the product code too. The `include` also covers any of the project's own files in `scripts/`; if those don't type-check, tell the user and ask whether to fix them or narrow `include` to the kit's scripts. If the project has one, rename the kit's to `tsconfig.scripts.json` and, in the `check:process` script only, change `tsc -p .` to `tsc -p tsconfig.scripts.json` |
+| `package.json` | Merge: add the kit's `scripts` and `devDependencies`; keep everything else. If a `check` script exists, keep it and append `&& bun run check:process`. If none exists, step 5a writes one |
 | `docs/building.md`, `docs/writing-code.md`, `docs/writing-docs.md` | Rename the kit's, such as `docs/process/…`, and fix the links |
 | `docs/decisions/` (`README.md`, `template.md`, `0001`–`0005`) | If the project already keeps ADRs, renumber the kit's to follow them and fix every link |
 | `docs/modules/templates/` (`plan.html`, `review.html`, `module.css`, `module.js`) | — |
 | `docs/evidence/.gitkeep` | — |
-| `scripts/` (`check_history.ts`, `spec_lock.ts`, `spec_lock.test.ts`, `config.ts`, `markdown.ts`) | If `scripts/` already holds files, put these five in `scripts/agent-brain/` and change every `scripts/` path to `scripts/agent-brain/` in `package.json`, `.claude/settings.json`, `.githooks/pre-commit`, the CI workflow and step 6 below. The scripts find the repo root through git, so they work from either folder. If the project's own test command already runs `scripts/**/*.test.ts`, drop `bun test scripts` from `check:process` so the tests don't run twice |
+| `scripts/` (`check_history.ts`, `spec_lock.ts`, `spec_lock.test.ts`, `config.ts`, `markdown.ts`) | If `scripts/` already holds files, put these five in `scripts/agent-brain/` and change every path to these five files to `scripts/agent-brain/`: run `grep -rn 'scripts/' --exclude-dir=node_modules --exclude-dir=.git .` over the installed files and fix each hit that names a kit script, including `bun test scripts` in `package.json`, `.claude/settings.json`, `.githooks/pre-commit`, the CI workflow, the `AGENTS.md` repo map, ADR-0001 and ADR-0005, the scripts' usage text, and step 6 below. Editing the starter ADRs here is fine: they aren't committed yet. The history check finds the repo root through git, and the spec lock uses the folder `bun run` starts in, the package root, so both work from either folder. If the project's own test command already runs `scripts/**/*.test.ts`, drop `bun test scripts` from `check:process` so the tests don't run twice |
 | `bun.lock` | Keep the project's; `bun install` in step 6 adds the kit's two dev dependencies |
 | `.agents/skills/` (five folders) | — |
 | `.claude/skills/` | Symlinks to `.agents/skills/<name>`. Recreate them with `ln -s ../../.agents/skills/<name> .claude/skills/<name>` |
@@ -106,7 +106,7 @@ The process checks run on [Bun](https://bun.sh). If `bun --version` fails, tell 
 | `{{SPELLING}}` | `British` or `American` |
 | `{{LANGUAGE}}` | The main language |
 | `{{CHECK_CMD}}` | The check command, such as `bun run check` |
-| `{{TEST_CMD}}` | The command that runs every test |
+| `{{TEST_CMD}}` | The command that runs every test, including spec tests wherever they live (for Bun, `bun test` rather than a script limited to one folder) |
 | `{{MUTATION_TOOL}}` | The mutation-testing tool's name, from the preset |
 | `{{MUTATION_CMD}}` | Its command for one package |
 | `{{API_LISTING_CMD}}` | A command that prints a package's public names and doc comments |
@@ -119,17 +119,17 @@ The process checks run on [Bun](https://bun.sh). If `bun --version` fails, tell 
 
 If the user's linter can't enforce the SDK rule in `{{SDK_MECHANISM}}`, say so in that sentence and that the `code-reviewer` agent checks it instead.
 
-The mutation tool is a dev dependency. Ask before installing it; then run it once on one file to confirm the command works. If the user would rather wait, add a first box to `PLAN.md` to set it up.
+The mutation tool is a dev dependency. Ask before installing it; then run it once on one file to confirm the command works. If the user would rather wait, add a first box to `PLAN.md` to set it up, and still fill `{{MUTATION_TOOL}}` and `{{MUTATION_CMD}}` from the preset, so the docs say what that box will install.
 
 Then set `process.json`: `specTestFile` from the preset, `areas` from question 6, and `designFiles` as step 4 decided.
 
-Wire the project's own checks into `package.json`, so `{{CHECK_CMD}}` covers everything. In a new project: `"check": "bun run check:process && <lint command> && <test command>"`, leaving out the lint part if there's no linter. In an existing project, step 4 already appended `check:process` to its `check`.
+Wire the project's own checks into `package.json`, so `{{CHECK_CMD}}` covers everything. In a new project, or an existing one with no `check` script: `"check": "bun run check:process && <lint command> && <test command>"`, leaving out the lint part if there's no linter. In an existing project, step 4 already appended `check:process` to its `check`.
 
 ### 5b. Stack presets
 
 | Language | `specTestFile` | Test | Mutation tool and command | Public names and how private code stays private | API listing |
 |---|---|---|---|---|---|
-| TypeScript / JavaScript | `spec_{module}_test.ts` | `bun test`, `npx vitest run` or `npx jest` | Stryker (`@stryker-mutator/core`): `npx stryker run --mutate "src/<package>/**/*.ts"`. With `bun test`, set Stryker's `testRunner` to `command` and its command to `bun test` in `stryker.config.json` | A package's public names are what its `index.ts` exports. Other files are private, and a lint rule (`no-restricted-imports` or `eslint-plugin-boundaries`) stops imports that bypass `index.ts` | `out=$(mktemp -d) && npx tsc -p . --noEmit false --declaration --emitDeclarationOnly --rootDir src --outDir "$out" && cat "$out/<package>/index.d.ts"` |
+| TypeScript / JavaScript | `spec_{module}_test.ts` | `bun test`, `npx vitest run` or `npx jest` | Stryker (`@stryker-mutator/core`): `npx stryker run --mutate "src/<package>/**/*.ts"`. With `bun test`, set Stryker's `testRunner` to `command` and its command to `bun test` in `stryker.config.json` | A package's public names are what its `index.ts` exports. Other files are private, and a lint rule (`no-restricted-imports` or `eslint-plugin-boundaries`) stops imports that bypass `index.ts` | `out=$(mktemp -d) && npx tsc -p . --noEmit false --declaration --emitDeclarationOnly --outDir "$out" && cat "$out/src/<package>/index.d.ts"` |
 | Python | `test_spec_{module}.py` | `pytest` | mutmut: `mutmut run --paths-to-mutate src/<package>/` | A package's public names are listed in `__all__` in its `__init__.py`. Private names start with `_`, and import-linter stops imports of private modules | `python -m pydoc <package>` |
 | Go | `spec_{module}_test.go` | `go test ./...` | gremlins: `go tool gremlins unleash ./<package>/` | Exported names start with a capital letter. Private code sits in the package's own `internal/` folder, which the compiler hides from other packages | `go doc -all ./<package>` |
 | Rust | `spec_{module}.rs` (in `tests/`) | `cargo test` | cargo-mutants: `cargo mutants -p <crate>` | Public names are marked `pub`. Everything else is private to its module, and `pub(crate)` keeps shared helpers inside the crate | `cargo doc --no-deps -p <crate>`, or `cargo public-api` |
@@ -146,7 +146,7 @@ The look of every module page comes from the token blocks at the top of `docs/mo
    - `--good`, `--warn` and `--bad` stay recognisably green, amber and red, shifted towards the palette's temperature. `--adapter` and `--store` colour the adapter and stored-data nodes in diagrams: two more hues, distinct from the accent and from each other. Each has a `-soft` partner.
    - `--grid` is the accent at about 6% opacity. `--radius` comes from the corner answer. `--shadow` is subtle in light mode and `none` in dark mode.
 2. **Set the fonts.** Put the chosen families in `--font-text`, `--font-head` and `--font-mono`, each with a system fallback. Replace the Google Fonts `<link href>` in both `plan.html` and `review.html` with one URL that loads exactly those families and weights: 400, 500 and 600 for text, 600 for headings, 400 to 600 for code.
-3. **Check contrast** in both modes. Every text token must reach 4.5:1 on `--bg`, `--surface` and its own `-soft` background, and `--ink-3` at least 4.5:1 on `--surface`. Run this, filling in the pairs, and adjust any colour that fails:
+3. **Check contrast** in both modes. Every text token must reach 4.5:1 on `--bg`, `--surface` and its own `-soft` background, and `--ink-3` at least 4.5:1 on `--surface`. Also check `--surface` on `--accent`, the colours of the primary button. Run this, filling in the pairs, and adjust any colour that fails:
 
    ```sh
    bun -e 'const l=h=>{const c=h.match(/\w\w/g).map(x=>parseInt(x,16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2]};const r=(a,b)=>{const[x,y]=[l(a),l(b)].sort((m,n)=>n-m);return (x+.05)/(y+.05)};for(const[a,b]of [["#16191d","#f6f5f1"]])console.log(a,b,r(a,b).toFixed(2))'
@@ -154,13 +154,13 @@ The look of every module page comes from the token blocks at the top of `docs/mo
 
 4. **Diagrams in Markdown.** Fill `{{CLASSDEFS}}` in `docs/writing-docs.md` with six lines from the light palette, one per class the module pages use: `part` (accent-soft fill, accent stroke, ink text), `adapter` (adapter-soft, adapter), `test` (warn-soft, warn, plus `stroke-dasharray:5 3`), `store` (store-soft, store), `external` (sunk, ink-3) and `blocked` (bad-soft, bad). For example: `classDef part fill:#e7eefa,stroke:#1f5fbf,color:#16191d`.
 5. **Language tag.** For American spelling, change `lang="en-GB"` to `lang="en-US"` in both templates.
-6. **Show it.** Open `docs/modules/templates/plan.html` in a browser (`open` on macOS, `xdg-open` on Linux), in light and dark with the page's theme button. If you can take screenshots, check both at desktop width and at 390px. The page follows the system theme, so to capture each mode, screenshot a copy with `data-theme="light"` or `data-theme="dark"` on `<html>`, never the template. Headless Chrome won't go below 500px wide, so for phone width put the copy in a 390px `<iframe>` on a wrapper page. Ask the user whether they like it, and adjust until they do.
+6. **Show it.** Open `docs/modules/templates/plan.html` in a browser (`open` on macOS, `xdg-open` on Linux), in light and dark with the page's theme button. If you can take screenshots, check both at desktop width and at 390px. The page follows the system theme, so to capture each mode, screenshot a copy placed in a new folder next to `templates/`, such as `docs/modules/_preview/` (its `../templates/` links must resolve; delete the folder afterwards), with `data-theme="light"` or `data-theme="dark"` on `<html>`, never the template. Headless Chrome won't go below 500px wide, so for phone width put the copy in a 390px `<iframe>` on a wrapper page. Ask the user whether they like it, and adjust until they do.
 
 ### 5d. Dates and spelling
 
 Set the `date` of ADR-0001 to ADR-0005, and the changelog's date heading, to today.
 
-The installed docs are written in British English. If the user chose American, convert every installed Markdown file and both templates (behaviour → behavior, organise → organize, colour → color, licence → license, and so on), leaving code, commands and file names alone.
+The installed docs are written in British English. If the user chose American, convert every installed Markdown file and both templates (behaviour → behavior, organise/organisation → organize/organization, colour → color, licence → license, judgement → judgment, centre → center, catalogue → catalog, "the other way round" → "the other way around"; then grep for `-ise`, `-our` and `-ence` words to catch the rest), leaving code, commands and file names alone.
 
 ## Step 6. Verify
 

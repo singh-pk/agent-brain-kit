@@ -18,4 +18,4 @@ Headings in use: **Decided** (a new or changed ADR), **Added**, **Changed**, **R
 
 ### Fixed
 
-- Kit fixes from two end-to-end setup runs: spec tests and their lock are committed with the code, the page theme names diagram colours by role (`--adapter`, `--store`), and the hook resolves symlinked paths.
+- Kit fixes from two end-to-end setup runs: spec tests and their lock are committed with the code, the page theme names diagram colours by role (`--adapter`, `--store`), and the hook resolves symlinked paths. A third run fixed the TypeScript API listing command and clarified setup for projects with an existing `scripts/` folder.
