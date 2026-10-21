@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "check": "bun run check:process",
+    "check:process": "tsc -p . && bun test scripts && bun run spec:check && bun run history",
+    "history": "bun scripts/check_history.ts",
+    "spec:lock": "bun scripts/spec_lock.ts lock",
+    "spec:check": "bun scripts/spec_lock.ts check"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.14",
+    "typescript": "7.0.2"
+  }
+}

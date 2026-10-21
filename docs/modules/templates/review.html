@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Test review: MODULE-ID</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="../templates/module.css" />
+    <script src="../templates/module.js" defer></script>
+  </head>
+  <body data-round="1" data-gate="ship it">
+    <div class="shell">
+      <nav class="toc" aria-label="Contents"></nav>
+
+      <main>
+        <header class="masthead">
+          <div class="kind">Test review · stage 3 of 4</div>
+          <h1>MODULE-ID: what it builds, in a few words</h1>
+          <ul class="meta">
+            <li><span class="chip warn">In discussion</span></li>
+            <li>Round 1 · YYYY-MM-DD</li>
+            <li>Commit <code>abc1234</code></li>
+            <li>
+              <a href="plan.html">Plan</a>, agreed YYYY-MM-DD ·
+              <a href="../../building.md">Process</a>
+            </li>
+          </ul>
+          <div class="stats" data-stats>
+            <a class="button reply-jump" href="#reply">Your reply</a>
+            <button class="theme-toggle" type="button" data-theme-toggle>
+              Dark theme
+            </button>
+          </div>
+          <div class="round-banner" data-round-banner></div>
+        </header>
+
+        <section id="summary">
+          <div class="summary">
+            <dl>
+              <dt>Result</dt>
+              <dd>
+                <span class="chip good">14 of 14 pass</span> and the headline in
+                one sentence, such as "1 manual step left for you".
+              </dd>
+              <dt>Changed</dt>
+              <dd>
+                What is different from the plan, in one line, or "Nothing".
+              </dd>
+              <dt>Who notices</dt>
+              <dd>The one behaviour change that matters most.</dd>
+              <dt>You decide</dt>
+              <dd>
+                <a href="#Q1">Q1</a> one-line topic. With nothing to change,
+                reply "ship it".
+              </dd>
+            </dl>
+          </div>
+          <p class="hint">
+            At most 80 words in the box. Every number comes from a run on the
+            commit in the header.
+          </p>
+        </section>
+
+        <section id="try">
+          <h2>Try it yourself</h2>
+          <p class="hint">
+            Commands for a clean clone, in order, each with what you should see.
+            Run them yourself first, exactly as written.
+          </p>
+          <ol class="steps">
+            <li>
+              What this step shows.
+              <pre class="cmd"><code>the test command</code></pre>
+              You should see: the line that proves it worked.
+            </li>
+          </ol>
+        </section>
+
+        <section id="results">
+          <h2>Results</h2>
+          <p class="hint">
+            One row per test ID in the plan, plus earlier modules' tests as one
+            row. Status chip: good pass, bad fail, warn not yet run. Measured
+            numbers name their budget; raw output lives in docs/evidence/.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Status</th>
+                  <th>What it showed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>T0001</code></td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>The evidence in one line.</td>
+                </tr>
+                <tr>
+                  <td>Earlier modules</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>N tests re-run, none changed result.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="changes">
+          <h2>Changes from the plan</h2>
+          <p class="hint">
+            Every difference, small ones included. One that changed a decision
+            card names the plan round that agreed it. If none: "None".
+          </p>
+          <ul>
+            <li>What changed, why, and where it was agreed.</li>
+          </ul>
+        </section>
+
+        <section id="impact">
+          <h2>Impact and behaviour</h2>
+          <p class="hint">
+            From the real diff, not the plan. The tree shows what landed; the
+            table says who notices. Write "None" for a row only after checking.
+          </p>
+          <pre
+            class="tree"
+          ><span class="add">+ path/new-file</span>   <span class="note">what it holds</span>
+<span class="mod">~ path/changed.md</span>    <span class="note">what changes</span></pre>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>What changes for them</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Developers in the repo</td>
+                  <td>What they now run or see.</td>
+                </tr>
+                <tr>
+                  <td>CI</td>
+                  <td>Jobs and time, before and after.</td>
+                </tr>
+                <tr>
+                  <td>Admins and users</td>
+                  <td>What they notice, or "None".</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="engineering">
+          <h2>Engineering check</h2>
+          <p class="hint">
+            The plan's three rows, now judged on the code, the SDK against the
+            plan's SDK section, the spec-test lock and mutation scores, and the
+            code reviewer's findings with what was done with each.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Check</th>
+                  <th>Verdict</th>
+                  <th>Evidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Borrow before build</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>What the code imports, against the plan.</td>
+                </tr>
+                <tr>
+                  <td>Simplest, cheapest shape</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>No repeated work; the diff is as narrow as planned.</td>
+                </tr>
+                <tr>
+                  <td>Boundaries kept</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>Logic never calls the outside except through an adapter.</td>
+                </tr>
+                <tr>
+                  <td>SDK as agreed</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>
+                    The exported API matches the plan's SDK section; every
+                    public name has a doc comment; each package has a runnable
+                    example. Show the generated API listing in a details block.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Spec tests locked</td>
+                  <td><span class="chip good">Unchanged</span></td>
+                  <td>
+                    No spec test changed since the lock, from
+                    <code>git diff</code> and <code>spec.lock</code>. Any change
+                    names the plan round that agreed it.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Mutation score</td>
+                  <td><span class="chip plain">N%</span></td>
+                  <td>
+                    Per package, from the mutation tool. Each bug no test caught gets a
+                    new test or a reason it can't matter.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Code reviewer</td>
+                  <td><span class="chip good">Clear</span></td>
+                  <td>
+                    N findings, all fixed.
+                    <details>
+                      <summary>Findings</summary>
+                      <p>Each finding and what was done with it.</p>
+                    </details>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="records">
+          <h2>Records</h2>
+          <ul class="checklist">
+            <li class="done">ADRs accepted and linked</li>
+            <li>PLAN.md boxes ticked</li>
+            <li>DESIGN.md in line</li>
+            <li>CHANGELOG line citing ADRs and test IDs</li>
+            <li>Evidence in docs/evidence/&lt;id&gt;/</li>
+          </ul>
+        </section>
+
+        <section id="calls">
+          <h2>Your calls</h2>
+          <p class="hint">
+            Only what needs the user: a result to accept, a manual step to run,
+            a follow-up to place. Delete this section if there's none.
+          </p>
+          <article class="call" id="Q1">
+            <h3><span class="id">Q1</span> The question</h3>
+            <p>
+              Why it matters. <strong>Recommendation:</strong> the answer you'd
+              give.
+            </p>
+            <fieldset data-call="Q1">
+              <textarea
+                name="Q1"
+                placeholder="Leave empty to accept the recommendation"
+              ></textarea>
+            </fieldset>
+          </article>
+        </section>
+
+        <section id="log">
+          <h2>Review log</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Round</th>
+                  <th>Date</th>
+                  <th>What changed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>YYYY-MM-DD</td>
+                  <td>First run, on commit <code>abc1234</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside class="reply" id="reply" aria-label="Your reply">
+        <h2>Your reply</h2>
+        <p class="lede">
+          Answer anything you need to, then copy this into the chat. With
+          nothing to change, it reads "ship it".
+        </p>
+        <ol data-reply-list></ol>
+        <textarea
+          data-reply-notes
+          placeholder="Anything else: a test to add, a result to re-run"
+        ></textarea>
+        <output data-reply-output></output>
+        <div class="actions">
+          <button class="primary" type="button" data-copy-reply>
+            Copy reply
+          </button>
+          <button type="button" data-reset-reply>Reset</button>
+        </div>
+        <p class="note">Your answers are kept in this browser only.</p>
+      </aside>
+    </div>
+  </body>
+</html>

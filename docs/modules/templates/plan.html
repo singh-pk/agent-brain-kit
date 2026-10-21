@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Plan: MODULE-ID</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="../templates/module.css" />
+    <script src="../templates/module.js" defer></script>
+  </head>
+  <body data-round="1" data-gate="agreed">
+    <div class="shell">
+      <nav class="toc" aria-label="Contents"></nav>
+
+      <main>
+        <header class="masthead">
+          <div class="kind">Module plan · stage 1 of 4</div>
+          <h1>MODULE-ID: what it builds, in a few words</h1>
+          <ul class="meta">
+            <li><span class="chip warn">In discussion</span></li>
+            <li>Round 1 · YYYY-MM-DD</li>
+            <li><code>module/MODULE-ID</code></li>
+            <li>
+              <a href="../../../PLAN.md">Build plan</a> ·
+              <a href="../../building.md">Process</a>
+            </li>
+          </ul>
+          <div class="stats" data-stats>
+            <a class="button reply-jump" href="#reply">Your reply</a>
+            <button class="theme-toggle" type="button" data-theme-toggle>
+              Dark theme
+            </button>
+          </div>
+          <div class="round-banner" data-round-banner></div>
+        </header>
+
+        <section id="summary">
+          <div class="summary">
+            <dl>
+              <dt>Builds</dt>
+              <dd>
+                One or two sentences: what exists after the merge that doesn't
+                exist now.
+              </dd>
+              <dt>Why now</dt>
+              <dd>What later modules need from it, in one sentence.</dd>
+              <dt>Covers</dt>
+              <dd>
+                <span class="chip plain">T0001</span>
+                <span class="chip plain">T0002</span> and the build-plan boxes
+                it ticks, by their first words.
+              </dd>
+              <dt>Leaves out</dt>
+              <dd>
+                What a reader might expect here but isn't, and which module
+                takes it.
+              </dd>
+              <dt>You decide</dt>
+              <dd>
+                <a href="#D1">D1</a> one-line topic · <a href="#Q1">Q1</a>
+                one-line topic. Everything else follows accepted decisions.
+              </dd>
+            </dl>
+          </div>
+          <p class="hint">
+            At most 100 words in the box. A reader who stops here knows what the
+            module is and what you're asking of them.
+          </p>
+        </section>
+
+        <section id="how">
+          <h2>How it works</h2>
+          <p class="hint">
+            One diagram of the parts, then one worked example as numbered steps.
+            Define each new term the first time it appears. Add a parts table
+            only for facts the diagram can't show. About 250 words of prose at
+            most.
+          </p>
+          <p>
+            One paragraph that names the parts and how they connect, in the
+            order the diagram reads.
+          </p>
+          <figure class="diagram">
+            <pre class="mermaid">
+flowchart LR
+  subgraph repo["repository"]
+    A["api handler"]:::part
+    B["billing"]:::part
+    C["payments adapter"]:::adapter
+    T["test fakes"]:::test
+  end
+  X[("orders table")]:::store
+  M["payment provider"]:::external
+  A -->|"asks"| B
+  B -->|"charge"| C
+  T -.->|"tests only"| C
+  B --> X
+  C -->|"HTTPS"| M
+</pre>
+            <figcaption>
+              What the reader should notice in the diagram, in one sentence.
+            </figcaption>
+            <ul class="legend">
+              <li class="part">our logic</li>
+              <li class="adapter">adapter: talks to the outside</li>
+              <li class="test">test only</li>
+              <li class="store">stored data</li>
+              <li class="external">outside the project</li>
+            </ul>
+          </figure>
+          <h3>Worked example: a real case, start to finish</h3>
+          <ol class="steps">
+            <li>
+              The trigger, with real names and values: a person runs a command,
+              or a tool reads a file.
+            </li>
+            <li>What each part does next, and what it hands on.</li>
+            <li>The result the person sees, and what was recorded.</li>
+          </ol>
+        </section>
+
+        <section id="sdk">
+          <h2>The SDK</h2>
+          <p class="hint">
+            For each package the module adds or changes: one line on what it is
+            for, its public names as real signatures in the project's language
+            with their doc comments, a usage example a caller could copy, and
+            the facts in the table. Mark each package new or changed. Everything
+            not listed stays private. If the module exposes no API, say so in
+            one sentence.
+          </p>
+          <div class="sdk">
+            <h3>
+              <code>package name</code> <span class="chip plain">new</span>
+            </h3>
+            <p>What a caller uses it for, in one sentence.</p>
+            <pre><code>/** Returns a Thing ready to use. Throws BadInputError when … */
+export function createThing(options: Options): Thing
+
+/** Does … Safe to call concurrently. */
+export function doThing(thing: Thing, input: Input): Promise&lt;Result&gt;</code></pre>
+            <h4>Usage</h4>
+            <pre><code>const thing = createThing({ retries: 2 });
+const result = await doThing(thing, input);</code></pre>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Errors</th>
+                    <td>
+                      The exported errors a caller can tell apart, and when each
+                      happens.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Concurrency</th>
+                    <td>Which values are safe to share or call at once.</td>
+                  </tr>
+                  <tr>
+                    <th>Hidden</th>
+                    <td>
+                      What stays private, and how the language or a lint rule
+                      stops callers depending on it.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Used by</th>
+                    <td>
+                      The programs, packages and tests that call it in this
+                      module.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="calls">
+          <h2>Your calls</h2>
+          <p class="hint">
+            A card only for a real decision: one a later person could choose
+            differently at real cost. Each option is one line with its main
+            strength and its main cost. The recommended option is preselected,
+            and the rest of the reasoning goes in the details block, at most 120
+            words. Questions are things only the user knows or can do.
+          </p>
+
+          <article class="call" id="D1">
+            <h3><span class="id">D1</span> The decision, as a question</h3>
+            <p>
+              Why it needs deciding now, and what depends on it, in one or two
+              sentences.
+            </p>
+            <fieldset data-call="D1">
+              <label class="option">
+                <input type="radio" name="D1" value="A" data-rec checked />
+                <span class="letter">A</span>
+                <span class="text"
+                  >The recommended option<span class="rec-tag">recommended</span
+                  ><br /><span class="pro">Its main strength.</span>
+                  <span class="con">Its main cost.</span></span
+                >
+              </label>
+              <label class="option">
+                <input type="radio" name="D1" value="B" />
+                <span class="letter">B</span>
+                <span class="text"
+                  >An alternative<br /><span class="pro"
+                    >Its main strength.</span
+                  >
+                  <span class="con">Why it loses here.</span></span
+                >
+              </label>
+            </fieldset>
+            <details>
+              <summary>Why A</summary>
+              <p>
+                The deeper reasoning: the evidence, what was checked and how,
+                and what would make B the better choice.
+              </p>
+            </details>
+            <p class="record">
+              Records as
+              <a href="../../decisions/NNNN-title.md">ADR-NNNN</a>, proposed.
+            </p>
+          </article>
+
+          <article class="call" id="Q1">
+            <h3><span class="id">Q1</span> The question</h3>
+            <p>
+              Why it matters and what happens without an answer.
+              <strong>Recommendation:</strong> the answer you'd give.
+            </p>
+            <fieldset data-call="Q1">
+              <textarea
+                name="Q1"
+                placeholder="Leave empty to accept the recommendation"
+              ></textarea>
+            </fieldset>
+          </article>
+
+          <p class="settled">
+            <strong>Already decided:</strong>
+            <a href="../../decisions/NNNN-title.md">ADR-NNNN</a> decides what,
+            in a few words.
+          </p>
+          <p class="settled">
+            <strong>Small choices:</strong> agreeing the plan accepts these;
+            challenge any in your notes.
+          </p>
+          <ul class="settled">
+            <li>A choice that is cheap to change later, in one line.</li>
+          </ul>
+        </section>
+
+        <section id="why">
+          <h2>Why it holds</h2>
+          <p class="hint">
+            One row per promise the module makes. "Rests on" names the
+            mechanism; "Fails when" is the honest edge case and what happens
+            then. Then one line on what this module doesn't stop. 
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>It promises</th>
+                  <th>Because</th>
+                  <th>Fails when → then</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>The guarantee</td>
+                  <td>The mechanism it rests on</td>
+                  <td>
+                    The case that breaks it → what happens, and who sees it
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <strong>Doesn't stop:</strong> what is out of reach for this module,
+            and where it's handled.
+          </p>
+        </section>
+
+        <section id="engineering">
+          <h2>Engineering check</h2>
+          <p class="hint">
+            Three rows, always. The verdict chip is good, warn or bad. The line
+            says why; the details block holds the evidence (versions, licences,
+            release dates, the cost in passes, disk, network and memory).
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Check</th>
+                  <th>Verdict</th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Borrow before build</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>
+                    Which jobs use the standard library, which a library, and
+                    which our own code, in one line.
+                    <details>
+                      <summary>Libraries checked</summary>
+                      <p>
+                        Each candidate: version, licence, last release,
+                        maintainers, open security issues, and the verdict.
+                      </p>
+                    </details>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Simplest, cheapest shape</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>
+                    The simpler shape considered and why it fails, in one line.
+                    <details>
+                      <summary>Cost</summary>
+                      <p>
+                        Passes over the data, disk and network calls, memory.
+                      </p>
+                    </details>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Boundaries kept</td>
+                  <td><span class="chip good">Pass</span></td>
+                  <td>
+                    Which parts are our logic and which are adapters to the
+                    outside (network, disk, vendors, the OS), and that logic
+                    never calls the outside directly.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="impact">
+          <h2>What it touches</h2>
+          <p class="hint">
+            Exact paths. + new, ~ changed, − removed. Group a folder of new
+            stubs on one line. Then who notices, and what changes for them.
+          </p>
+          <pre
+            class="tree"
+          ><span class="add">+ path/new-file</span>   <span class="note">what it holds</span>
+<span class="mod">~ path/changed.md</span>    <span class="note">what changes</span></pre>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>What changes for them</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Developers in the repo</td>
+                  <td>New commands, slower checks, new rules.</td>
+                </tr>
+                <tr>
+                  <td>CI</td>
+                  <td>New jobs and their cost.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tests">
+          <h2>How we'll prove it</h2>
+          <p class="hint">
+            One row per test ID: what passing proves, in plain words, and the
+            command. New IDs are marked new. The test review page settles the
+            final list.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Proves</th>
+                  <th>Runs in</th>
+                  <th>Command</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>T0001</code></td>
+                  <td>What a pass shows.</td>
+                  <td>CI</td>
+                  <td><code>the test command</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="log">
+          <h2>Review log</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Round</th>
+                  <th>Date</th>
+                  <th>What changed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>YYYY-MM-DD</td>
+                  <td>First draft.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <aside class="reply" id="reply" aria-label="Your reply">
+        <h2>Your reply</h2>
+        <p class="lede">
+          Change any pick, then copy this into the chat. With every pick
+          recommended and no notes, it reads "agreed".
+        </p>
+        <ol data-reply-list></ol>
+        <textarea
+          data-reply-notes
+          placeholder="Anything else: a missing case, a question"
+        ></textarea>
+        <output data-reply-output></output>
+        <div class="actions">
+          <button class="primary" type="button" data-copy-reply>
+            Copy reply
+          </button>
+          <button type="button" data-reset-reply>Reset</button>
+        </div>
+        <p class="note">Your picks are kept in this browser only.</p>
+      </aside>
+    </div>
+  </body>
+</html>

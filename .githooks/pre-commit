@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+bun run check
+bun scripts/check_history.ts --staged

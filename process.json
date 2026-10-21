@@ -1,0 +1,5 @@
+{
+  "designFiles": ["DESIGN.md", "PLAN.md"],
+  "areas": ["process", "testing", "architecture", "tooling", "design-system", "scope"],
+  "specTestFile": "spec_{module}_test.ts"
+}
