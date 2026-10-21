@@ -47,6 +47,17 @@ describe("spec lock", () => {
     ]);
   });
 
+  test("skips mutation-tool copies at the root, not module folders", () => {
+    write("mutants/src/billing/spec_billing_engine_test.ts", "copy\n");
+    write("src/mutants/spec_billing_engine_test.ts", "real\n");
+    expect(findSpecFiles(tmp.root, TEMPLATE)).toContain(
+      "src/mutants/spec_billing_engine_test.ts",
+    );
+    expect(findSpecFiles(tmp.root, TEMPLATE)).not.toContain(
+      "mutants/src/billing/spec_billing_engine_test.ts",
+    );
+  });
+
   test("follows the file name template for any language", () => {
     write("tests/test_spec_billing_engine.py", "c\n");
     expect(findSpecFiles(tmp.root, "test_spec_{module}.py")).toEqual([
@@ -125,6 +136,26 @@ describe("spec lock", () => {
     const input = parseHookInput({
       tool_name: "Write",
       tool_input: { file_path: "src/billing/billing_test.ts" },
+    });
+    expect(input && guard(tmp.root, input)).toBeNull();
+  });
+
+  test.each([
+    "sed -i '' 's/a/b/' src/billing/spec_billing_engine_test.ts",
+    "echo x > src/billing/spec_billing_engine_test.ts",
+    "git checkout -- src/billing/spec_billing_engine_test.ts",
+    "rm src/billing/tax/spec_billing_engine_test.ts",
+  ])("the hook asks before a shell write to a locked file: %s", (command) => {
+    lockModule(tmp.root, TEMPLATE, "billing-engine");
+    const input = parseHookInput({ tool_name: "Bash", tool_input: { command } });
+    expect(input && guard(tmp.root, input)?.decision).toBe("ask");
+  });
+
+  test("the hook lets the shell read a locked file", () => {
+    lockModule(tmp.root, TEMPLATE, "billing-engine");
+    const input = parseHookInput({
+      tool_name: "Bash",
+      tool_input: { command: "cat src/billing/spec_billing_engine_test.ts" },
     });
     expect(input && guard(tmp.root, input)).toBeNull();
   });

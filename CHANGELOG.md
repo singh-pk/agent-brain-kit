@@ -19,3 +19,4 @@ Headings in use: **Decided** (a new or changed ADR), **Added**, **Changed**, **R
 ### Fixed
 
 - Kit fixes from two end-to-end setup runs: spec tests and their lock are committed with the code, the page theme names diagram colours by role (`--adapter`, `--store`), and the hook resolves symlinked paths. A third run fixed the TypeScript API listing command and clarified setup for projects with an existing `scripts/` folder.
+- Kit fixes from Python, Go and Rust setup runs: working mutation, test and API listing commands per language, spec test names each test runner collects, a recommended linter and CI step per language, and the hook now asks before shell commands that may write a locked spec test.

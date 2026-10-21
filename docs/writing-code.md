@@ -81,14 +81,14 @@ If a comment is needed to explain *what* a block does, rename things or split th
 
 Tests check behaviour, not internals, so the code can be restructured without rewriting them. There are two kinds of test, and they are treated differently ([ADR-0004](decisions/0004-lock-spec-tests-written-from-the-plan-by-a-fresh-agent.md)):
 
-- A **spec test** proves one of the build plan's test IDs and is named after it, such as `T0003 refunds never exceed the charge`. It tests only through the package's SDK (section 9), and lives in its module's own file, named by `specTestFile` in `process.json` (`{{SPEC_FILE_EXAMPLE}}` for the module `billing-engine`). A fresh agent writes it from the agreed plan before the code exists, and its file is then **locked**: the checks fail if the file changes. If a spec test turns out to be wrong, stop and reopen the plan, as [going back](building.md#going-back) describes. Never edit it to make code pass.
+- A **spec test** proves one of the build plan's test IDs and is named after it, such as {{SPEC_NAME_EXAMPLE}}: the ID comes first, after any prefix the test runner needs, and may be lowercase. It tests only through the package's SDK (section 9), and lives in its module's own file, named by `specTestFile` in `process.json` (`{{SPEC_FILE_EXAMPLE}}` for the module `billing-engine`). A fresh agent writes it from the agreed plan before the code exists, and its file is then **locked**: the checks fail if the file changes. If a spec test turns out to be wrong, stop and reopen the plan, as [going back](building.md#going-back) describes. Never edit it to make code pass.
 - A **working test** is any other test, such as a unit test of a helper. Add, change or delete it as the code changes.
 
 The split exists because a test the code's author can freely change no longer checks that author. Editing a failing test is the most common way coding agents cheat, and locking the tests that state what was agreed stops it without slowing down the rest.
 
 ## 9. Every package is an SDK
 
-Every caller outside a package uses it only through its **public names**, the ones the package chooses to expose. Those names are its **SDK** (software development kit): the whole contract between the package and its callers ([ADR-0003](decisions/0003-use-every-package-only-through-its-agreed-sdk.md)). In {{LANGUAGE}}, {{SDK_MECHANISM}}
+Every caller outside a package uses it only through its **public names**, the ones the package chooses to expose. Those names are its **SDK** (software development kit): the whole contract between the package and its callers ([ADR-0003](decisions/0003-use-every-package-only-through-its-agreed-sdk.md)). {{SDK_MECHANISM}}
 
 The SDK is decided before the code. Each module's plan page shows the SDK: the public names, their signatures and a usage example. The user agrees that page before any code is written. The code is then written to fit the SDK, not the other way round.
 
@@ -113,7 +113,7 @@ Rules on a page drift out of an agent's attention during a long session. So the 
 |---|---|---|
 | 1. This page | Everything, if it's read | [`AGENTS.md`](../AGENTS.md) sends every agent here before it writes code |
 | 2. The plan first | A wrong or overcomplicated shape, before any code exists | Step 1 above, and the plan page for a module |
-| 3. Checks on every commit | Formatting, complexity, dead code, unsafe types, unhandled errors, changed spec tests, broken ADRs | `{{CHECK_CMD}}`, run by the pre-commit hook and CI |
+| 3. Checks on every commit | {{COMMIT_CHECKS}} | `{{CHECK_CMD}}`, run by the pre-commit hook and CI |
 | 4. A fresh-context review | What checks can't judge: whether the shape is the simplest, whether the diff does more than the task | The [`code-reviewer`](../.claude/agents/code-reviewer.md) agent reads only the diff and this page. Then a person reviews |
 
 **Setup, once per clone:** `bun install`, which also turns on the commit hook. {{SETUP_STEPS}}

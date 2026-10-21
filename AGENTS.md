@@ -94,7 +94,7 @@ docs/modules/         one folder per module: plan.html, review.html, spec.lock; 
 docs/evidence/        proof gathered while building
 scripts/              Bun checks: check_history.ts (ADRs, changelog), spec_lock.ts (the spec-test lock and its hook)
 .claude/agents/       fresh-context agents: code-reviewer, cold-reader, spec-writer
-.claude/settings.json the hook that refuses edits to locked spec tests
+.claude/settings.json the hook that refuses edits to locked spec tests and asks before shell writes to them
 .agents/skills/       skills any AI tool can follow, linked from .claude/skills/
 .githooks/pre-commit  runs the checks before each commit
 ```

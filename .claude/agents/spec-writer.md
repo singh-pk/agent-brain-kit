@@ -19,7 +19,7 @@ Never read a function body, a working test, or private code. If the SDK isn't en
 ## What you write
 
 - One file per package, named by `specTestFile` in `process.json` with `{module}` replaced by the module id, each `-` written as `_`. It uses only the SDK.
-- One test per test ID, its name starting with the ID, such as `T0003 refunds never exceed the charge`. Sub-cases are fine.
+- One test per test ID, its name starting with the ID (after any prefix the test runner needs), such as {{SPEC_NAME_EXAMPLE}}. The ID may be lowercase where the language wants it; match IDs ignoring case. Sub-cases are fine.
 - A test ID that checks a tool rather than a package has no SDK. Work from the plan's command and expected outcome: run the real tool on throwaway inputs the test builds in a temp folder, and check its exit status and output.
 - Test what the plan says, including each failure case it names. A test that only checks the happy path proves little.
 - Tests are deterministic, never reach the network unless the plan says so, and never touch the real home folder.

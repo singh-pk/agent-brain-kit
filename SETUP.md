@@ -14,32 +14,31 @@ Placeholders look like `{{NAME}}`. When you finish, no placeholder may remain an
 
 ## Step 1. Explain the process to the user
 
-Before asking anything, explain what they're getting, in your own words and briefly. Cover these points and show this diagram:
+Before asking anything, explain what they're getting, briefly and in plain words. The user may not be an engineer: define every term the first time you use it, in one short clause. Say what you found in step 0 (for example, "an empty repository" or "an existing TypeScript project"). Cover these points and show this diagram; you may reword its labels, but keep its flow:
 
 ```
-         ┌───────────────────────────────────────────────┐
-         │ THE REPO IS THE BRAIN  (every agent reads it)  │
-         │ AGENTS.md · decisions (ADRs) · CHANGELOG       │
-         │ DESIGN.md (how it works) · PLAN.md (test IDs)  │
-         └───────────────────────┬───────────────────────┘
-                                 ▼
- ┌──────────┐ "agreed" ┌───────────────────────────┐ "ship it" ┌──────────┐
- │ 1. PLAN  │─────────▶│ 2. BUILD                  │──────────▶│ 4. SHIP  │
- │ plan.html│          │ SDK → fresh agent writes  │           │ one PR,  │
- │ D1, Q1…  │          │ spec tests → LOCKED →     │           │ CI green │
- │ ADRs     │          │ code → checks → fresh     │           │ you merge│
- └────▲─────┘          │ code-reviewer agent       │           └──────────┘
-      │ plan can't hold└────────────┬──────────────┘
-      └─────────────────────────────┤        3. TEST REVIEW (review.html)
+  THE REPO IS THE MEMORY: rules, decisions, changelog, design, plan
+  (every agent reads these first)
+                │
+                ▼
+  1. PLAN ──"agreed"──▶ 2. BUILD ──▶ 3. TEST REVIEW ──"ship it"──▶ 4. SHIP
+  a page with           tests written     a page with the           one pull
+  options for you       first by a        results, for you          request,
+  to pick               separate agent,   to approve                you merge
+                        then locked;
+                        code until they
+                        pass; fresh review
+       ▲                     │
+       └── back to you if the plan must change
 ```
 
-1. **The repo is the memory.** Agents forget between sessions. `AGENTS.md`, one decision record (ADR) per decision, and a changelog mean any new session, or any AI tool, knows what's settled in minutes. Rejected ideas are recorded too, with "reopen only if" conditions, so they stop coming back.
-2. **People decide; agents do the work.** Each piece of work, a *module*, stops twice for the user: a plan page before code, and a test review page before merge. Both are local HTML pages with lettered options and a reply box, so judging one takes minutes.
-3. **Agents can't mark their own homework.** A separate agent writes the tests from the agreed plan before the code exists, and a hook locks them. The builder must make the code fit what was agreed, or reopen the plan.
-4. **Fresh eyes review everything.** A `code-reviewer` agent and a `cold-reader` agent start with a clean context, so they don't share the author's blind spots.
-5. **Machines check the rules.** One check command, a pre-commit hook and CI enforce the records, the test locks and the project's own linters.
+1. **The repo is the memory.** AI agents forget everything between sessions. So the project keeps its memory in files: `AGENTS.md` (the rules every agent reads), one short file per decision, called an **ADR** (architecture decision record), saying what was chosen and what was turned down, and a changelog. Any new session, or any AI tool, catches up in minutes, and rejected ideas stop coming back.
+2. **You decide; agents do the work.** Work is split into **modules**, pieces you could describe in a sentence, such as "send an invoice". Each module pauses twice for your approval, at a plan page before any code and a test review page before it's merged. These pauses are the **gates**. Both pages open in your browser, with options to click and a reply to copy back, so each takes a few minutes.
+3. **Agents can't mark their own homework.** Before any code exists, a separate agent writes the tests from the plan you agreed. The tests are then locked, so the builder can't quietly change them to make its code pass.
+4. **Fresh eyes review everything.** Two review agents start with no memory of the work, so they don't share the author's blind spots: one checks code, the other checks that docs make sense to a newcomer.
+5. **Machines check the rules.** One command runs every check. It runs automatically before each commit, and on GitHub after each push (that's **CI**, continuous integration).
 
-Then say what happens next: about eight questions, then the agent installs and customises everything, including a theme for the HTML pages, runs the checks, and shows the result. Ask whether to go ahead.
+Then say what happens next: about six short questions in two or three rounds, most with a recommended answer to accept; then you install and customise everything, including a colour theme for the pages, run the checks and show the result. Nothing is written or installed until they confirm one summary. Ask whether to go ahead.
 
 ## Step 2. Learn the project
 
@@ -47,22 +46,35 @@ If the target has code, read it before asking: the main language, the package ma
 
 ## Step 3. Interview
 
-Ask these, a few at a time, each with a recommended answer first. Skip any the code already answers, but say what you found.
+Ask in rounds of up to four questions. Use free text for names, sentences and links, and multiple choice for the rest, with a recommended option first. Ask follow-ups only when an answer needs them. Where this list names no recommendation, recommend the kit's default.
 
-1. **Name and one line.** The project's name, and one sentence on what it is and who it's for.
-2. **Owner.** Who signs off the gates: the user's name or role, such as "the founder" or "the tech lead".
-3. **Stack.** The main language, and the commands that run its tests and linters. Offer the presets in [Stack presets](#stack-presets). For a mixed stack, pick the language the modules will mostly be written in.
-4. **The check command.** One command that runs everything before a commit. Recommend `bun run check`, which runs the kit's process checks plus the project's own lint and test commands, wired in step 5.
-5. **Spelling.** British or American English for docs.
-6. **Decision areas.** Five to ten short labels for ADRs, such as `api`, `billing`, `auth`, `data`, `ui`, `infra`, plus `process`, `testing`, `architecture`, `tooling`, `design-system` and `scope`, which the starter ADRs use. Propose them from the code or the one-line description.
-7. **Theme for the HTML pages.** Offer:
-   - *Derive it from my brand:* the user gives a website URL, a logo or brand colours, and you build the palette and pick fonts to match.
-   - *I'll give colours and fonts:* an accent colour, and heading, body and code fonts from Google Fonts.
-   - *Pick one for me:* offer three named directions, each with its accent, background and fonts. For example, **Paper** (warm off-white, ink blue; headings Bricolage Grotesque, body IBM Plex Sans, code JetBrains Mono; the kit's default), **Terminal** (cool grey, green accent; headings and body Inter, code JetBrains Mono), and **Studio** (cream, deep red accent; headings Source Serif 4, body Source Sans 3, code Source Code Pro).
-   Also ask the corner radius: sharp (4px), soft (10px, default) or round (16px).
-8. **Extras.** Ask: a GitHub Actions workflow that runs the check command on each push and pull request (recommend yes, if they use GitHub)? And what to put in `DESIGN.md` and `PLAN.md` now: drafted from the existing code and README (existing projects), drafted from a short description (new projects), or left as stubs.
+**Round 1, free text:**
 
-Sum up the answers in a short list and ask for a yes before writing anything.
+1. **Name and one line.** The project's name, and one sentence on what it is and who it's for, such as "A mobile app that helps dog walkers schedule and bill clients". In an existing project, propose both from the README and ask for a yes.
+
+**Round 2, multiple choice:**
+
+2. **Stack.** The main language. Offer the presets in [Stack presets](#stack-presets), with the one the code uses (or TypeScript on Bun for a new project) recommended. For a mixed stack, pick the language most modules will be written in.
+3. **Linter and mutation testing.** Offer, recommended: "Yes, set up the preset's linter with limits on complexity and function length, and its mutation-testing tool (it plants small bugs to check the tests catch them)". Other options: linter only; neither for now (a first `PLAN.md` box will set them up). In an existing project with a linter, keep it and ask only about limits and mutation testing.
+4. **Theme for the pages.** Offer:
+   - *Derive it from my brand:* follow up in free text for a website, logo or brand colours. If the reference isn't the user's own brand, say so in the summary. Where its fonts aren't on Google Fonts, pick the closest free match.
+   - *Pick one for me:* follow up with three named looks, each with its accent, background and fonts. **Paper** (warm off-white, ink blue; headings Bricolage Grotesque, body IBM Plex Sans, code JetBrains Mono; the kit's default), **Terminal** (cool grey, green accent; headings and body Inter, code JetBrains Mono), and **Studio** (cream, deep red accent; headings Source Serif 4, body Source Sans 3, code Source Code Pro).
+   - *I'll give colours and fonts:* follow up in free text for an accent colour and heading, body and code fonts from Google Fonts.
+   Corners default to soft (10px); offer sharp (4px) or round (16px) during the preview in step 5c, not as a question here.
+5. **Spelling.** British or American English for the docs. Recommend British only if the user writes British spelling; the kit's docs are British, and step 5d converts them.
+
+**Round 3, multiple choice:**
+
+6. **Extras.** Two questions: a GitHub Actions workflow that runs the checks on each push and pull request (recommend yes, if they use GitHub); and what to put in `DESIGN.md` and `PLAN.md` now: drafted from the existing code and README (existing projects), drafted from the one-line description (new projects), or left as stubs.
+
+**Defaults, stated rather than asked:**
+
+- **Who approves the gates.** In a one-person project, the user; write "the founder" or the role they gave. Ask only if they mention a team.
+- **The check command:** `bun run check`, which runs the kit's process checks plus the project's own lint and test commands, wired in step 5. If the project already has a check command, keep it and say so.
+- **Decision areas:** tags that let you find related decisions later. Propose five to ten from the one-line description, such as `invoicing`, `payments`, `auth`, `ui`, plus the six the starter ADRs use: `process`, `testing`, `architecture`, `tooling`, `design-system` and `scope`.
+- **Test and mutation commands,** from the preset.
+
+**The summary.** List every answer and every default above, including what will be installed (Bun if missing, the linter, the mutation tool) and the decision areas, and invite edits. Ask for one yes that covers everything steps 4 and 5 will do. Don't ask further questions after it, except to approve the theme in step 5c and to resolve a file clash in step 4.
 
 ## Step 4. Install the files
 
@@ -88,9 +100,9 @@ Copy these from the kit into the target, keeping their paths. **Never overwrite 
 | `.claude/settings.json` | Merge the `PreToolUse` hook into the existing `hooks` |
 | `.githooks/pre-commit` | If the project uses another hook manager (husky, lefthook, pre-commit), add the two commands there instead and drop the `prepare` script |
 | `.github/workflows/check.yml` | Only if the user said yes to CI in step 3. If a workflow already runs checks, add its two steps there instead |
-| `.gitignore` | Add `node_modules/` if missing |
+| `.gitignore` | Add `node_modules/` and the mutation tool's output folders (`.stryker-tmp/` and `reports/mutation/` for Stryker, `mutants/` for mutmut, `mutants.out*/` for cargo-mutants) if missing |
 
-Don't copy `SETUP.md`, the kit's `README.md` or its `LICENSE`.
+Don't copy the kit's top-level `SETUP.md`, `README.md` or `LICENSE`. Do copy `docs/decisions/README.md`: it is the decisions index, not the kit's README.
 
 The process checks run on [Bun](https://bun.sh). If `bun --version` fails, tell the user and offer the install command from bun.sh. Don't run an install script without their yes.
 
@@ -104,47 +116,64 @@ The process checks run on [Bun](https://bun.sh). If `bun --version` fails, tell 
 | `{{ONE_LINE}}` | The one-line description |
 | `{{OWNER}}` | Who signs off the gates |
 | `{{SPELLING}}` | `British` or `American` |
-| `{{LANGUAGE}}` | The main language |
 | `{{CHECK_CMD}}` | The check command, such as `bun run check` |
 | `{{TEST_CMD}}` | The command that runs every test, including spec tests wherever they live (for Bun, `bun test` rather than a script limited to one folder) |
 | `{{MUTATION_TOOL}}` | The mutation-testing tool's name, from the preset |
 | `{{MUTATION_CMD}}` | Its command for one package |
 | `{{API_LISTING_CMD}}` | A command that prints a package's public names and doc comments |
 | `{{SPEC_FILE_EXAMPLE}}` | `specTestFile` with `{module}` replaced by `billing_engine` |
-| `{{SDK_MECHANISM}}` | One or two sentences: how the language marks names public, and how private code is kept private. From the preset |
-| `{{LINT_LIMITS}}` | The complexity, nesting and function-length limits the project's linters enforce, in one sentence. If none, recommend rules for its linter and ask before turning them on. If the user declines, write that there are none yet and the `code-reviewer` agent judges shape and nesting instead |
+| `{{SPEC_NAME_EXAMPLE}}` | The preset's spec test name, in code format |
+| `{{SDK_MECHANISM}}` | One or two sentences, starting with the language's name: how it marks names public, and how private code is kept private. From the preset |
+| `{{COMMIT_CHECKS}}` | What the check command really catches, no more: what the project's linter and type checker check (for example "formatting, complexity and unused code (ruff); types (mypy)"), then "failing tests, changed spec tests and broken ADRs". With no linter, say so |
+| `{{LINT_LIMITS}}` | The complexity, nesting and function-length limits the project's linters enforce, in one sentence. If step 3 agreed a linter, its limits. If the user declined one, write that there are none yet and the `code-reviewer` agent judges shape and nesting instead |
 | `{{SETUP_STEPS}}` | Anything else a new clone needs, such as installing the linter. Or delete the placeholder |
 | `{{CLASSDEFS}}` | Six Mermaid `classDef` lines built from the theme (5c) |
-| `{{DESIGN_OVERVIEW}}`, `{{PLAN_ITEMS}}` | From step 3, question 8. A stub says what goes there in one sentence |
+| `{{DESIGN_OVERVIEW}}`, `{{PLAN_ITEMS}}` | From step 3, question 6. A stub says what goes there in one sentence |
 
 If the user's linter can't enforce the SDK rule in `{{SDK_MECHANISM}}`, say so in that sentence and that the `code-reviewer` agent checks it instead.
 
-The mutation tool is a dev dependency. Ask before installing it; then run it once on one file to confirm the command works. If the user would rather wait, add a first box to `PLAN.md` to set it up, and still fill `{{MUTATION_TOOL}}` and `{{MUTATION_CMD}}` from the preset, so the docs say what that box will install.
+The mutation tool and linter are dev dependencies, agreed in step 3's question 3 and summary. Install them, then run each once to confirm its command works. ADR-0005 already covers them, so they need a line under Added in the changelog, not their own ADR. If the user chose to wait, add a first box to `PLAN.md` to set it up, and still fill `{{MUTATION_TOOL}}` and `{{MUTATION_CMD}}` from the preset, so the docs say what that box will install.
 
-Then set `process.json`: `specTestFile` from the preset, `areas` from question 6, and `designFiles` as step 4 decided.
+Then set `process.json`: `specTestFile` from the preset, `areas` from the decision areas in step 3's summary, and `designFiles` as step 4 decided.
 
 Wire the project's own checks into `package.json`, so `{{CHECK_CMD}}` covers everything. In a new project, or an existing one with no `check` script: `"check": "bun run check:process && <lint command> && <test command>"`, leaving out the lint part if there's no linter. In an existing project, step 4 already appended `check:process` to its `check`.
 
 ### 5b. Stack presets
 
-| Language | `specTestFile` | Test | Mutation tool and command | Public names and how private code stays private | API listing |
-|---|---|---|---|---|---|
-| TypeScript / JavaScript | `spec_{module}_test.ts` | `bun test`, `npx vitest run` or `npx jest` | Stryker (`@stryker-mutator/core`): `npx stryker run --mutate "src/<package>/**/*.ts"`. With `bun test`, set Stryker's `testRunner` to `command` and its command to `bun test` in `stryker.config.json` | A package's public names are what its `index.ts` exports. Other files are private, and a lint rule (`no-restricted-imports` or `eslint-plugin-boundaries`) stops imports that bypass `index.ts` | `out=$(mktemp -d) && npx tsc -p . --noEmit false --declaration --emitDeclarationOnly --outDir "$out" && cat "$out/src/<package>/index.d.ts"` |
-| Python | `test_spec_{module}.py` | `pytest` | mutmut: `mutmut run --paths-to-mutate src/<package>/` | A package's public names are listed in `__all__` in its `__init__.py`. Private names start with `_`, and import-linter stops imports of private modules | `python -m pydoc <package>` |
-| Go | `spec_{module}_test.go` | `go test ./...` | gremlins: `go tool gremlins unleash ./<package>/` | Exported names start with a capital letter. Private code sits in the package's own `internal/` folder, which the compiler hides from other packages | `go doc -all ./<package>` |
-| Rust | `spec_{module}.rs` (in `tests/`) | `cargo test` | cargo-mutants: `cargo mutants -p <crate>` | Public names are marked `pub`. Everything else is private to its module, and `pub(crate)` keeps shared helpers inside the crate | `cargo doc --no-deps -p <crate>`, or `cargo public-api` |
-| Other | Ask | Ask | Search for the language's maintained mutation tool, and check it as `docs/building.md` checks libraries | Ask how the language marks names public | Ask |
+Run the project's tools through its own runner where it has one, such as `uv run pytest` or `npx vitest run`. Check each command below works in this project before writing it into a doc; if one fails, fix it and tell the user.
+
+**Tests**
+
+| Language | `specTestFile` | Spec test name | Test command | Mutation tool and command |
+|---|---|---|---|---|
+| TypeScript / JavaScript | `spec_{module}_test.ts` | `test("T0003 refunds never exceed the charge", …)` | `bun test`, `npx vitest run` or `npx jest` | Stryker (`@stryker-mutator/core`): `npx stryker run --mutate "src/<package>/**/*.ts"`. With `bun test`, set Stryker's `testRunner` to `command` and its command to `bun test` in `stryker.config.json` |
+| Python | `test_spec_{module}.py`, in the tests folder | `def test_t0003_refunds_never_exceed_the_charge():`. pytest collects only names starting with `test`, so the ID goes after that prefix | `pytest`, with `testpaths = ["tests"]` in `[tool.pytest.ini_options]` so mutmut's copies in `mutants/` aren't collected | mutmut 3: set `[tool.mutmut] source_paths = ["src/"]` in `pyproject.toml`, then `mutmut run "<package>.*" && mutmut export-cicd-stats && cat mutants/mutmut-cicd-stats.json` for the score (`mutmut results` lists only survivors). Every test must pass first |
+| Go | `spec_{module}_test.go` | `func TestT0003RefundsNeverExceedTheCharge(t *testing.T)` | `go test ./...` | gremlins, installed with `go get -tool github.com/go-gremlins/gremlins/cmd/gremlins@latest`: `GOFLAGS=-count=1 go tool gremlins unleash --timeout-coefficient 10 ./<package>/`. It works per package and needs passing tests |
+| Rust | `spec_{module}.rs`, in `tests/` (integration tests reach only public names) | `fn t0003_refunds_never_exceed_the_charge()`, lowercase so the compiler doesn't warn | `cargo test --no-fail-fast` | cargo-mutants: `cargo mutants -f 'src/<module>.rs'` (or `'src/<module>/**'`) |
+| Other | Ask | The ID first, after any prefix the test runner requires | Ask | Search for the language's maintained mutation tool, and check it as `docs/building.md` checks libraries |
+
+**Code and CI**
+
+| Language | Linter and limits to recommend | Public names and how private code stays private | API listing | CI steps, after `bun install` |
+|---|---|---|---|---|
+| TypeScript / JavaScript | oxlint or ESLint: `complexity` 10, `max-depth` 3, `max-lines-per-function` 60 | A package's public names are what its `index.ts` exports. Other files are private, and a lint rule (`no-restricted-imports` or `eslint-plugin-boundaries`) stops imports that bypass `index.ts` | `out=$(mktemp -d) && npx tsc -p . --noEmit false --declaration --emitDeclarationOnly --outDir "$out" && cat "$out/src/<package>/index.d.ts"` | `actions/setup-node` and `npm ci`, only if the project uses npm |
+| Python | ruff: `C90` (`max-complexity = 10`), `PLR0912` and `PLR0915`. Its nesting rule is preview-only, so the `code-reviewer` agent judges nesting | A package's public names are listed in `__all__` in its `__init__.py`. Private names start with `_`. import-linter can stop imports of private modules; offer it as a second dependency, or leave the check to the `code-reviewer` agent | `PYTHONPATH=src python -m pydoc <package>` (drop `PYTHONPATH` without a `src/` folder) | `astral-sh/setup-uv` and `uv sync --locked`, or `actions/setup-python` and the project's install |
+| Go | golangci-lint with `gocognit`, `nestif` and `funlen` | Exported names start with a capital letter; everything else is private to its package. Code in an `internal/` folder can be imported only from inside the folder that holds `internal/` | `go doc -all ./<package>` | `actions/setup-go` with `go-version-file: go.mod` |
+| Rust | clippy with `cognitive_complexity`, `too_many_lines` and `excessive_nesting` (thresholds in `clippy.toml`) | Public names are marked `pub`. Everything else is private to its module, and `pub(crate)` keeps shared helpers inside the crate | `cargo +nightly public-api -p <crate>` if nightly is installed; otherwise `grep -rnE '^\s*pub ' src/<module>*` (`cargo doc` writes HTML, not text) | `dtolnay/rust-toolchain` with `components: clippy` |
+| Other | Ask | Ask how the language marks names public | Ask | The language's official setup action |
+
+Pin every action you add by its full commit SHA with the version as a comment, as the kit's workflow does; find the SHA with `git ls-remote https://github.com/<owner>/<action> refs/tags/<version>`. Commit the language's lockfile (`uv.lock`, `go.sum`, `Cargo.lock`) so CI installs the same versions. The test and mutation tools must be on the `PATH` that git hooks and Claude Code's hooks see; if one is installed somewhere else (such as `~/.cargo/bin`), say so in `{{SETUP_STEPS}}`.
 
 ### 5c. Theme the pages
 
 The look of every module page comes from the token blocks at the top of `docs/modules/templates/module.css`: a light block (`:root`), a dark block for system dark mode, and a matching forced-dark block (`:root[data-theme="dark"]`). Rewrite their values; keep every token name, and keep the two dark blocks identical.
 
-1. **Build the palette** from the answer to question 7.
+1. **Build the palette** from the answer to question 4.
    - `--accent` is the brand colour, adjusted until it passes contrast. `--accent-soft` is a pale tint of it in light mode and a deep shade in dark mode.
    - `--bg`, `--surface` and `--sunk` are three close neutrals tinted towards the brand. `--surface` sits lightest in light mode and slightly raised from `--bg` in dark mode.
    - `--ink`, `--ink-2` and `--ink-3` are text, from strongest to faintest. `--line` and `--line-strong` are borders.
    - `--good`, `--warn` and `--bad` stay recognisably green, amber and red, shifted towards the palette's temperature. `--adapter` and `--store` colour the adapter and stored-data nodes in diagrams: two more hues, distinct from the accent and from each other. Each has a `-soft` partner.
-   - `--grid` is the accent at about 6% opacity. `--radius` comes from the corner answer. `--shadow` is subtle in light mode and `none` in dark mode.
+   - `--grid` is the accent at about 6% opacity. `--radius` is 10px unless the user picks sharp (4px) or round (16px) during the preview below. `--shadow` is subtle in light mode and `none` in dark mode.
 2. **Set the fonts.** Put the chosen families in `--font-text`, `--font-head` and `--font-mono`, each with a system fallback. Replace the Google Fonts `<link href>` in both `plan.html` and `review.html` with one URL that loads exactly those families and weights: 400, 500 and 600 for text, 600 for headings, 400 to 600 for code.
 3. **Check contrast** in both modes. Every text token must reach 4.5:1 on `--bg`, `--surface` and its own `-soft` background, and `--ink-3` at least 4.5:1 on `--surface`. Also check `--surface` on `--accent`, the colours of the primary button. Run this, filling in the pairs, and adjust any colour that fails:
 
@@ -154,7 +183,7 @@ The look of every module page comes from the token blocks at the top of `docs/mo
 
 4. **Diagrams in Markdown.** Fill `{{CLASSDEFS}}` in `docs/writing-docs.md` with six lines from the light palette, one per class the module pages use: `part` (accent-soft fill, accent stroke, ink text), `adapter` (adapter-soft, adapter), `test` (warn-soft, warn, plus `stroke-dasharray:5 3`), `store` (store-soft, store), `external` (sunk, ink-3) and `blocked` (bad-soft, bad). For example: `classDef part fill:#e7eefa,stroke:#1f5fbf,color:#16191d`.
 5. **Language tag.** For American spelling, change `lang="en-GB"` to `lang="en-US"` in both templates.
-6. **Show it.** Open `docs/modules/templates/plan.html` in a browser (`open` on macOS, `xdg-open` on Linux), in light and dark with the page's theme button. If you can take screenshots, check both at desktop width and at 390px. The page follows the system theme, so to capture each mode, screenshot a copy placed in a new folder next to `templates/`, such as `docs/modules/_preview/` (its `../templates/` links must resolve; delete the folder afterwards), with `data-theme="light"` or `data-theme="dark"` on `<html>`, never the template. Headless Chrome won't go below 500px wide, so for phone width put the copy in a 390px `<iframe>` on a wrapper page. Ask the user whether they like it, and adjust until they do.
+6. **Show it.** Open `docs/modules/templates/plan.html` in a browser (`open` on macOS, `xdg-open` on Linux), in light and dark with the page's theme button. If you can take screenshots, check both at desktop width and at 390px. The page follows the system theme, so to capture each mode, screenshot a copy placed in a new folder next to `templates/`, such as `docs/modules/_preview/` (its `../templates/` links must resolve; delete the folder afterwards), with `data-theme="light"` or `data-theme="dark"` on `<html>`, never the template. Headless Chrome won't go below 500px wide, so for phone width put the copy in a 390px `<iframe>` on a wrapper page. Ask the user whether they like it, and whether to change the corners (sharp 4px, soft 10px, round 16px), and adjust until they do.
 
 ### 5d. Dates and spelling
 

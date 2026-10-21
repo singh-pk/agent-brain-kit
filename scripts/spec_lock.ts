@@ -19,12 +19,17 @@ const SKIPPED_DIRS = new Set([
   "target",
   ".venv",
   "vendor",
+  "testdata",
+  ".stryker-tmp",
 ]);
+const SKIPPED_TOP_DIRS = new Set(["mutants", "mutants.out", "mutants.out.old"]);
 const LEDGER = "spec.lock";
 const MODULES_DIR = join("docs", "modules");
 const GOING_BACK = "docs/building.md#going-back";
 const FILE_TOOLS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 const RELOCK = /\bspec:lock\b|spec_lock\.ts\s+lock\b/;
+const SHELL_WRITE =
+  /\bsed\b[^|;&]*\s-[a-zA-Z]*i|\bperl\b[^|;&]*\s-[a-zA-Z]*i|>|\btee\b|\b(mv|cp|rm|ln|dd|truncate|patch|chmod)\b|\bgit\s+(checkout|restore|apply|mv|rm|stash)\b/;
 
 export type Problem = {
   path: string;
@@ -87,7 +92,10 @@ export function findSpecFiles(root: string, template: string): string[] {
   const walk = (dir: string): void => {
     for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
       const path = dir === "" ? entry.name : `${dir}/${entry.name}`;
-      if (entry.isDirectory() && !SKIPPED_DIRS.has(entry.name)) walk(path);
+      const skipped =
+        SKIPPED_DIRS.has(entry.name) ||
+        (dir === "" && SKIPPED_TOP_DIRS.has(entry.name));
+      if (entry.isDirectory() && !skipped) walk(path);
       if (entry.isFile() && pattern.test(entry.name)) found.push(path);
     }
   };
@@ -177,6 +185,14 @@ function repoPath(root: string, path: string): string {
   return relative(realPath(root), realPath(full)).split(sep).join("/");
 }
 
+function shellWrite(root: string, command: string): string | null {
+  if (!SHELL_WRITE.test(command)) return null;
+  for (const path of readLedgers(root).keys()) {
+    if (command.includes(basename(path))) return path;
+  }
+  return null;
+}
+
 export function guard(root: string, input: HookInput): HookDecision {
   const tool = input.tool_name ?? "";
   const command = input.tool_input?.command ?? "";
@@ -186,6 +202,14 @@ export function guard(root: string, input: HookInput): HookDecision {
       decision: "ask",
       reason:
         "This rewrites a spec.lock. Approve only if the user agreed the spec test change in a plan round.",
+    };
+  }
+
+  const written = tool === "Bash" ? shellWrite(root, command) : null;
+  if (written !== null) {
+    return {
+      decision: "ask",
+      reason: `This command may change ${written}, a locked spec test. Approve only if it only reads the file; a spec test changes only after a plan round (${GOING_BACK}).`,
     };
   }
 

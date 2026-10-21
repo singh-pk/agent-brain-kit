@@ -2,7 +2,7 @@
 
 A ready-made way of working for building software with AI coding agents. Your repo keeps the memory, people make the decisions, and agents do the work without marking their own homework.
 
-You install it by asking your agent to follow one file, [`SETUP.md`](SETUP.md). The agent explains the process, asks about eight questions about your project, stack and brand, and then installs and customises everything, including a theme for the review pages.
+You install it by asking your agent to follow one file, [`SETUP.md`](SETUP.md). The agent explains the process, asks about six short questions about your project, stack and brand, and then installs and customises everything, including a theme for the review pages.
 
 ## Quick start
 
