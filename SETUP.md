@@ -72,7 +72,7 @@ Copy these from the kit into the target, keeping their paths. **Never overwrite 
 |---|---|
 | `AGENTS.md` | Merge: keep the user's rules, add the kit's sections, and remove duplicates. Ask if two rules conflict |
 | `CLAUDE.md` | Make sure its first line is `@AGENTS.md`; keep the rest |
-| `CHANGELOG.md` | Add the kit's dated entry at the top; keep the history |
+| `CHANGELOG.md` | Install only the kit's header and its `Decided` and `Added` lines, under today's date; drop the kit's own `Fixed` lines. If the project has a changelog, add that entry at the top and keep its history |
 | `DESIGN.md`, `PLAN.md` | Ask: use the existing file as the design (and point `designFiles` in `process.json` at it), or add these alongside |
 | `process.json`, `tsconfig.json` | If the project is TypeScript with no tsconfig of its own, add its source folders, such as `"src/**/*.ts"`, to the kit's `include`, so `tsc` checks the product code too. If the project has one, rename the kit's to `tsconfig.scripts.json` and, in the `check:process` script only, change `tsc -p .` to `tsc -p tsconfig.scripts.json` |
 | `package.json` | Merge: add the kit's `scripts` and `devDependencies`; keep everything else. If a `check` script exists, keep it and append `&& bun run check:process` |

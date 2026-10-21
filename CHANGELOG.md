@@ -15,3 +15,7 @@ Headings in use: **Decided** (a new or changed ADR), **Added**, **Changed**, **R
 ### Added
 
 - The agent brain: `AGENTS.md`, the process docs, module page templates, skills, review agents, the history check and the spec-test lock.
+
+### Fixed
+
+- Kit fixes from two end-to-end setup runs: spec tests and their lock are committed with the code, the page theme names diagram colours by role (`--adapter`, `--store`), and the hook resolves symlinked paths.
